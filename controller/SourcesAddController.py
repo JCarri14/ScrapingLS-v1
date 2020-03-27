@@ -1,16 +1,15 @@
+from ddbb.DBManager import DBManager
 from view.SourcesAddView import SourceAddView
 from model.SourceFilter import SourceFilter
 from model.ScrapingSource import ScrapingSource
-from ddbb.dbManager import Database
-
 
 class SourcesAddController:
-    def __init__(self, master_view, master_controller, db_manager):
+    def __init__(self, master_view, master_controller):
         self.parentView = master_view
         self.parentController = master_controller
         self.view = SourceAddView(master_view)
         self.source = ScrapingSource(None, None)
-        self.db_manager = db_manager
+        self.db_manager = DBManager()
 
     def show_view(self):
         self.view = SourceAddView(self.parentView)
@@ -22,7 +21,7 @@ class SourcesAddController:
     def on_accept_request(self):
         self.source.name = self.view.source_name.get("1.0", "end-1c")
         self.source.url = self.view.source_url.get("1.0", "end-1c")
-        self.db_manager.addSource(self.source)
+        self.db_manager.insert_item("sources", self.source)
         self.parentController.on_hide_add_view_from_add()
 
     def on_decline_request(self):
@@ -39,7 +38,7 @@ class SourcesAddController:
     def on_update_request(self):
         self.source.name = self.view.source_name.get("1.0", "end-1c")
         self.source.url = self.view.source_url.get("1.0", "end-1c")
-        self.db_manager.updateSource(self.source)
+        self.db_manager.update_item("sources", self.source)
         self.parentController.on_hide_add_view_from_add()
 
     def on_update_view(self, source):
