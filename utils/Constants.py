@@ -29,6 +29,7 @@ RESULT_VALUES = ["item-container", "title", "thumbnail", "description", "created
 NAME_LABEL = "Name"
 URL_LABEL = "Url"
 VALUE_LABEL = "Value"
+TAG_LABEL = "Html Tag"
 HOME_LABEL = "Home"
 WE_LABEL = "We"
 STATS_LABEL = "Stats"
