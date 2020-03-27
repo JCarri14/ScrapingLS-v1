@@ -29,9 +29,10 @@ class SourcesAddController:
 
     def on_add_filter_request(self):
         result = self.view.filterResult.get()
+        #html_tag = self.view.filter_tag.get("1.0", "end-1c")
         name = self.view.filterReference.get("1.0", "end-1c")
         value = self.view.filterValue.get("1.0", "end-1c")
-        self.source.filters.append(SourceFilter(result, name, value))
+        self.source.filters.append(SourceFilter(result, None, name, value))
         #self.view.add_filter_item(SourceFilter(result, name, value))
         self.view.update_filters_list(self.source.filters)
 
