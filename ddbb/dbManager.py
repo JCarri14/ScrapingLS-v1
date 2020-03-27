@@ -43,6 +43,7 @@ class DBManager:
     def get_items(self, location):
         self.instance.current_factory.set_item_location(location)
         if location == "sources":
+            self.instance.sources = []
             self.instance.sources = self.instance.current_factory.get_items()
         else:
             if location == "news":
