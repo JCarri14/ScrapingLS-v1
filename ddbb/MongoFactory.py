@@ -41,7 +41,7 @@ class MongoFactory(DBFactory):
 
     def get_items(self):
         print("Sending Request...")
-
+        self.items = []
         for item in self.collection.find():
             item = ScrapingSource(item["name"], item["url"])
             if len(item.filters) > 0:
