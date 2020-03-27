@@ -30,7 +30,7 @@ class SourceController:
         self.addController.on_update_view(self.db_manager.instance.aux_old_item)
 
     def on_delete_source_request(self, index):
-        self.db_manager.delete_item(self.db_manager.sources[index])
+        self.db_manager.delete_item("sources", self.db_manager.instance.sources[index])
         self.on_hide_add_view_from_add()
 
     def on_add_view_request(self):
