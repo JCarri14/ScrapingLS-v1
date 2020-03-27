@@ -42,11 +42,13 @@ class MongoFactory(DBFactory):
     def get_items(self):
         print("Sending Request...")
         self.items = []
+        #self.collection = self.db["sources"]
         for item in self.collection.find():
-            item = ScrapingSource(item["name"], item["url"])
-            if len(item.filters) > 0:
-               item.filters = self.toPythonFiltersModel(item.filters)
-            self.items.append(item)
+            size = len(item["filters"])
+            item_new = ScrapingSource(item["name"], item["url"])
+            if size > 0:
+                item_new.filters = self.toPythonFiltersModel(item["filters"])
+            self.items.append(item_new)
         print("Request received!")
         return self.items
 
