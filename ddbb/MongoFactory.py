@@ -79,7 +79,7 @@ class MongoFactory(DBFactory):
     def toPythonFiltersModel(self, filters):
         newList = []
         for filter in filters:
-            newFilter = SourceFilter(filter["expected_result"],
+            newFilter = SourceFilter(filter["expected_result"], None,
                                      filter["name"],
                                      filter["value"])
             newList.append(newFilter)
