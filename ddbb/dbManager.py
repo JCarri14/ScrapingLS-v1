@@ -1,66 +1,67 @@
-from pymongo import MongoClient
+from ddbb.DBFactory import DBFactory
+from ddbb.MongoFactory import MongoFactory
+from ddbb.Neo4jFactory import Neo4jFactory
 
-from model.ScrapingSource import ScrapingSource
-from model.SourceFilter import SourceFilter
+class DBManager:
+    __instance = None
 
+    class __Manager:
+        def __init__(self):
+            self.mongoFactory = None
+            self.neo4jFactory = None
+            self.current_factory = None
+            self.sources = []
+            self.news = []
+            self.bagOfWords = []
+            self.aux_old_item = None
 
-class Database:
+    instance = None
 
     def __init__(self):
-        self.client = MongoClient(port=27017)
-        self.db = self.client["db_scraping"]
-        self.collection = self.db["sources"]
-        self.sources = []
-        self.aux_old_source = None
+        if not DBManager.instance:
+            DBManager.instance = DBManager.__Manager()
 
-    def addSource(self, source):
-        src = self.getMappedModel(source)
-        self.collection.insert_one(src)
+    def __getattr__(self, name):
+        return getattr(self.instance, name)
 
-    def getMappedModel(self, source):
-        filters = []
-        for item in source.filters:
-            f = {
-                "expected_result": item.expected_result,
-                "name": item.name,
-                "value": item.value
-            }
-            filters.append(f)
-        src = {
-            "name": source.name,
-            "url": source.url,
-            "filters": filters
-        }
-        return src
+    def get_sources(self):
+        return self.instance.sources
 
-    def updateSource(self,source):
-        self.deleteSource(self.aux_old_source)
-        self.addSource(source)
-        #src = self.getMappedModel(source)
-        #myquery = {"name": self.aux_old_source.name, "url": self.aux_old_source.url}
-        #newvalues = {"$set": {"name": source.name, "url": source.url, "filters": source.filters}}
-        #self.collection.update_one(myquery, newvalues)
+    def insert_item(self, location, item):
+        self.instance.current_factory.set_item_location(location)
+        self.instance.current_factory.insert_item(item)
 
-    def set_aux_old_source(self, source):
-        self.aux_old_source = source
+    def update_item(self, location, item):
+        self.instance.current_factory.set_item_location(location)
+        self.instance.current_factory.set_aux_old_item(self.instance.aux_old_item)
+        self.instance.current_factory.update_item(item)
 
-    def requestSources(self):
-        print("Sending Request...")
-        for item in self.collection.find():
-            print(item)
-            source = ScrapingSource(item["name"],
-                                    item["url"])
-            filter_list = []
-            for filter in item["filters"]:
-                newFilter = SourceFilter(filter["expected_result"],
-                                         filter["name"],
-                                         filter["value"])
-                source.add_filter(newFilter)
-            self.sources.append(source)
-        print("Request received...")
+    def delete_item(self, location, item):
+        self.instance.current_factory.set_item_location(location)
+        self.instance.current_factory.delete_item(item)
 
-    def deleteSource(self, source):
-        src = self.getMappedModel(source)
-        query = {"name": src['name'], "url": src['url']}
-        self.collection.delete_one(query)
+    def get_items(self, location):
+        self.instance.current_factory.set_item_location(location)
+        if location == "sources":
+            self.instance.sources = self.instance.current_factory.get_items()
+        else:
+            if location == "news":
+                self.instance.news = self.instance.current_factory.get_items()
+            else:
+                if location == "bagOfWords":
+                    self.instance.bagOfWords = self.instance.current_factory.get_items()
 
+    def get_item_by_name(self, location, name):
+        self.instance.current_factory.set_item_location(location)
+        self.instance.current_factory.get_item_by_name(name)
+
+    def setFactorySource(self, name):
+        if name == "Mongo":
+            if self.instance.mongoFactory is None:
+                self.instance.mongoFactory = MongoFactory()
+            self.instance.current_factory = self.mongoFactory
+        else:
+            if name == "Neo4j":
+                if self.instance.neo4jFactory is None:
+                    self.instance.neo4jFactory = Neo4jFactory(None, None, None)
+                self.instance.current_factory = self.neo4jFactory
