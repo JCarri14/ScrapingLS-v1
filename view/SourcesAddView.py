@@ -11,6 +11,7 @@ class SourceAddView(Frame):
         self.source_url = None
         self.filtersList = None
         self.filterReference = None
+        self.filterTag = None
         self.filterResult = None
         self.filterValue = None
         self.filters = []
@@ -74,8 +75,12 @@ class SourceAddView(Frame):
         resultContainer.place(relx=0, rely=0, relwidth=0.8, relheight=0.2)
         self.get_filter_result_form(resultContainer)
 
+        tagContainer = Frame(master, bg=COLOR_WHITE)
+        tagContainer.place(relx=0.04, rely=0.2, relwidth=0.35, relheight=0.2)
+        self.get_filter_tag_form(tagContainer)
+
         nameContainer = Frame(master, bg=COLOR_WHITE)
-        nameContainer.place(relx=0, rely=0.20, relwidth=0.8, relheight=0.2)
+        nameContainer.place(relx=0.45, rely=0.20, relwidth=0.35, relheight=0.2)
         self.get_filter_reference_form(nameContainer)
 
         valueContainer = Frame(master, bg=COLOR_WHITE)
@@ -111,6 +116,14 @@ class SourceAddView(Frame):
         self.filterResult = ttk.Combobox(master, values=RESULT_VALUES, state="readonly")
         self.filterResult.current(1)
         self.filterResult.place(relx=0.1, rely=0.5, relwidth=0.9, relheight=0.4)
+
+    def get_filter_tag_form(self, master: Frame):
+        tagLabel = Label(master, text=TAG_LABEL, bg=COLOR_WHITE, fg=COLOR_DARK)
+        tagLabel.config(anchor="w")
+        tagLabel.place(relx=0.1, rely=0.05, relwidth=1, relheight=0.4)
+        self.filterTag = Text(master, fg=COLOR_WHITE, bg=COLOR_DARK)
+        self.filterTag.place(relx=0.1, rely=0.5, relwidth=1, relheight=0.4)
+
 
     def get_filter_reference_form(self, master: Frame):
         filterLabel = Label(master, text=FILTER_LABEL, fg=COLOR_DARK, bg=COLOR_WHITE)
