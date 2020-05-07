@@ -30,27 +30,28 @@ class MongoFactory(DBFactory):
             if self.collection_name == "media":
                 res = None
                 if 'comment' not in source:
+                    src = {}
                     if 'original_media_name' in source:
                         res = self.get_item_by_name(source['original_media_name'])
+                        src = {
+                            "noticia": source['tweet']['text'],
+                            "font": source['original_media_name'],
+                            "retweetUsuari":source['retweet_user']
+                        }
+                        self.collection.insert_one(src)
                     else:
                         res = self.get_item_by_name(source['media_name'])
-                    if res is not None:
-                        found = False
-                        for t in res['tweets']:
-                            if t["text"] == source["tweet"]["text"]:
-                                t["retweets"] += 1
-                                found = True
-                        if not found:
-                            res["tweets"].append(source["tweet"])
-
-                        self.update_item(res)
-                    else:
-                        src = self.toMediaDBModel(source)
+                        src = {
+                            "noticia": source['tweet']['text'],
+                            "font": source['media_name']
+                        }
                         self.collection.insert_one(src)
                 else:
                     src = {
-                        "name": source.name,
-                        "url": source.entities.entities.urls
+                        "comentari": source['comment']['text'],
+                        "noticia":source['tweet']['text'],
+                        "font":source['media_name'],
+                        "comentariUser":source['commented_user']
                     }
                     self.collection.insert_one(src)
     def update_item(self, source):

@@ -31,7 +31,11 @@ class TwitterManager:
                 newT["tweet"]["text"] = tweet['retweeted_status']['text']
                 newT["tweet"]["retweets"] = tweet['retweeted_status']['retweet_count']
                 newT["tweet"]["favourites"] = tweet['retweeted_status']['favorite_count']
-                newT["url"] = tweet ['retweeted_status'] ['extended_tweet']['entities']['urls'][0]['url']
+                if 'extended_tweet' in tweet:
+                    if 'entitites' in tweet ['retweeted_status']:
+                        if 'urls' in tweet['retweeted_status'] in tweet ['retweeted_status'] ['entities']:
+                            if (len(tweet ['retweeted_status'] ['entities']['urls']) > 0):
+                                newT["url"] = tweet ['retweeted_status'] ['entities']['urls'][0]['url']
             else:
                 if tweet['in_reply_to_status_id'] is None:
                     newT["media_name"] = tweet['user']['name']
@@ -41,10 +45,14 @@ class TwitterManager:
                     newT["tweet"]["text"] = tweet['text']
                     newT["tweet"]["retweets"] = tweet['retweet_count']
                     newT["tweet"]["favourites"] = tweet['favorite_count']
-                    newT["url"] = tweet['extended_tweet']['entities']['urls'][0]['url']
+                    if 'entitites' in tweet:
+                        if (len(tweet['entities']['urls']) > 0):
+                            newT["url"] = tweet['entities']['urls'][0]['url']
+
                 else:
                     newT["tweet"] = {}
                     newT["tweet_id"] = tweet['in_reply_to_status_id']
+                    newT['commented_user'] = tweet['user']['name']
                     newT["comment"] = {}
                     newT["comment"]["text"] = tweet['text']
                     newT["comment"]["user"]= tweet['user']['name']
@@ -52,7 +60,6 @@ class TwitterManager:
                     original_tweet = self.api.get_status(tweet['in_reply_to_status_id'])._json
                     newT["tweet"]["text"] = original_tweet['text']
                     newT["media_name"] = original_tweet['user']['name']
-                    newT["url"] = tweet['extended_tweet']['entities']['urls'][0]['url']
             return newT
 
         def on_get_original_tweet(self, tweet):
@@ -85,6 +92,8 @@ class TwitterManager:
         def start_stream_from_source(self, media_name):
             listener = Listener(self.on_read_stream)
             stream = Stream(self.authenticate, listener)
+            stream.filter(follow=["198829810", "7996082", "145992645", "26729931", "74453123", "14436030", "10012122"])
+
             thread = StreamThread(stream, self.on_read_tweets_response)
             thread.start()
 
