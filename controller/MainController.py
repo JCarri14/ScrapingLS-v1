@@ -1,4 +1,5 @@
 from ddbb.DBManager import DBManager
+from scraping.TwitterManager import TwitterManager
 from view.MainView import MainView
 from controller.HomeController import HomeController
 from controller.SourcesController import SourceController

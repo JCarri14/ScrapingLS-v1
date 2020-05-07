@@ -46,7 +46,7 @@ class DBManager:
             self.instance.sources = []
             self.instance.sources = self.instance.current_factory.get_items()
         else:
-            if location == "news":
+            if location == "media_news":
                 self.instance.news = self.instance.current_factory.get_items()
             else:
                 if location == "bagOfWords":
