@@ -29,8 +29,9 @@ class TwitterManager:
                 newT["tweet"]["tweet_id"] = tweet['retweeted_status']['id']
                 newT["tweet"]["created_at"] = tweet['retweeted_status']['created_at']
                 newT["tweet"]["text"] = tweet['retweeted_status']['text']
-                newT["tweet"]["retweets"] = tweet['retweeted_status']['retweet_count'] + 1
+                newT["tweet"]["retweets"] = tweet['retweeted_status']['retweet_count']
                 newT["tweet"]["favourites"] = tweet['retweeted_status']['favorite_count']
+                newT["url"] = tweet ['retweeted_status'] ['extended_tweet']['entities']['urls'][0]['url']
             else:
                 if tweet['in_reply_to_status_id'] is None:
                     newT["media_name"] = tweet['user']['name']
@@ -40,6 +41,7 @@ class TwitterManager:
                     newT["tweet"]["text"] = tweet['text']
                     newT["tweet"]["retweets"] = tweet['retweet_count']
                     newT["tweet"]["favourites"] = tweet['favorite_count']
+                    newT["url"] = tweet['extended_tweet']['entities']['urls'][0]['url']
                 else:
                     newT["tweet"] = {}
                     newT["tweet_id"] = tweet['in_reply_to_status_id']
@@ -50,7 +52,7 @@ class TwitterManager:
                     original_tweet = self.api.get_status(tweet['in_reply_to_status_id'])._json
                     newT["tweet"]["text"] = original_tweet['text']
                     newT["media_name"] = original_tweet['user']['name']
-                    #newT['created_at'] = original_tweet['created_at'].strftime("%m/%d/%Y, %H:%M:%S")
+                    newT["url"] = tweet['extended_tweet']['entities']['urls'][0]['url']
             return newT
 
         def on_get_original_tweet(self, tweet):
@@ -76,6 +78,7 @@ class TwitterManager:
 
         def on_read_stream(self, item):
             tweet = self.treat_tweet(item)
+            print(tweet)
             if tweet:
                 self.db_manager.insert_item("media", tweet)
 

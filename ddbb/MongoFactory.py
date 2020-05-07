@@ -48,16 +48,11 @@ class MongoFactory(DBFactory):
                         src = self.toMediaDBModel(source)
                         self.collection.insert_one(src)
                 else:
-                    res = self.get_item_by_name(source['media_name'])
-                    if res is not None:
-                        for t in res['tweets']:
-                            if t['tweet_id'] == source['tweet']['tweet_id']:
-                                if t['comments']: # list is not empty
-                                    print()
-                                else:
-                                    print()
-                    print()
-
+                    src = {
+                        "name": source.name,
+                        "url": source.entities.entities.urls
+                    }
+                    self.collection.insert_one(src)
     def update_item(self, source):
         if self.collection_name == "sources":
             self.delete_item(self.aux_old_item)
@@ -88,7 +83,7 @@ class MongoFactory(DBFactory):
         print("Request received!")
         return self.items
 
-    def get_item_by_name(self, name):
+    """def get_item_by_name(self, name):
         res = None
         if self.collection_name == "sources":
             query = {"name": name}
@@ -97,7 +92,7 @@ class MongoFactory(DBFactory):
             if self.collection_name == "media":
                 query = {"media_name": name}
                 res = self.collection.find_one(query)
-        return res
+        return res"""
 
     def toMediaNewDBModel(self, item):
         return item
@@ -116,7 +111,7 @@ class MongoFactory(DBFactory):
         filters = self.toSourceDBFilters(source)
         src = {
             "name": source.name,
-            "url": source.url,
+            "url": source.entities.urls,
             "filters": filters
         }
         return src

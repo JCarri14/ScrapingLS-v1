@@ -8,9 +8,11 @@ if __name__ == '__main__':
     twitter = TwitterManager().instance
     #twitter.read_tweets_from_source('lavanguardia')
     twitter.start_stream_from_source('lavanguardia')
+    while 1:
+        i = 1
 
-    print("Hola")
+    """print("Hola")
     root = Tk()
     root.withdraw()
     app = Controller(root)
-    root.mainloop()
+    root.mainloop()"""
