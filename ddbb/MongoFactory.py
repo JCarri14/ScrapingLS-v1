@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from tokenizer.MongoDBTokenizer import MongoDBCorpusReader
 
 from ddbb.DBFactory import DBFactory
 from model.ScrapingSource import ScrapingSource
@@ -12,6 +13,8 @@ class MongoFactory(DBFactory):
         self.db = self.client["db_scraping"]
         self.collection = self.db["sources"]
         self.collection_name = "sources"
+        self.reader = MongoDBCorpusReader(db='db_scraping', collection='media',
+                                 field='noticia')
         self.items = []
         self.aux_old_item = None
 
@@ -54,6 +57,10 @@ class MongoFactory(DBFactory):
                         "comentariUser":source['commented_user']
                     }
                     self.collection.insert_one(src)
+        for sent in self.reader.words():
+            print(sent)
+
+
     def update_item(self, source):
         if self.collection_name == "sources":
             self.delete_item(self.aux_old_item)
@@ -64,7 +71,6 @@ class MongoFactory(DBFactory):
                 newvalues = {"$set": {"tweets": source['tweets']}}
                 self.collection.update_one(myquery, newvalues)
         #src = self.getMappedModel(source)
-
 
     def delete_item(self, source):
         src = self.toSourceDBModel(source)

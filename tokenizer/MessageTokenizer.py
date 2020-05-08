@@ -1,6 +1,7 @@
 from nltk.tokenize import RegexpTokenizer, PunktSentenceTokenizer
 from nltk.corpus import stopwords
 from nltk.corpus import wordnet
+from nltk.corpus.reader import ChunkedCorpusReader, CategorizedPlaintextCorpusReader, CategorizedTaggedCorpusReader
 from nltk.stem import PorterStemmer, LancasterStemmer, \
     RegexpStemmer, SnowballStemmer
 from nltk.stem import WordNetLemmatizer
@@ -91,7 +92,19 @@ class MssgTokenizer:
         print(lematizer.lemmatize(term, pos="n"))
 
     def readCorpusList(self):
-        print()
+        reader = ChunkedCorpusReader('C:/nltk_data/corpora/cookbook', r'.*\.chunk')
+
+        for chunk in reader.chunked_words():
+            try:
+                print(chunk.leaves())
+            except:
+                print(chunk)
+
+    def readCatgCorpus(self):
+        reader = CategorizedTaggedCorpusReader('C:/nltk_data/corpora/cookbook', r'news_.*\.txt',
+                                                  cat_file='bryan_adams.txt')
+        for sent in reader.tagged_sents(categories=['sports']):
+            print(sent)
 
 
 
